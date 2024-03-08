@@ -3,7 +3,7 @@ import json
 import requests
 import cassiopeia as cass
 from dotenv import load_dotenv
-from riot_requests.champions import Champion
+from riot_requests.champions import UserChampion
 
 load_dotenv()
 API_KEY = os.environ.get('RIOT_API_KEY')
@@ -18,7 +18,7 @@ class Player:
         self.cass_summoner = cass.get_summoner(name=name, region=region)
         self.puid = self.cass_summoner.puuid
 
-    def get_top_3_mastery_champs(self):
+    def get_top_5_mastery_champs(self):
         url = f'https://{self.region.lower()}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{self.puid}?api_key={API_KEY}'
         response = requests.get(url)
 
@@ -26,9 +26,7 @@ class Player:
         data = data[0:5]
         champs = []
         for entry in data:
-            champ = Champion(id=entry["championId"], region=DEFAULT_LANGUAGE_REGION)
+            champ = UserChampion(id=entry["championId"], region=DEFAULT_LANGUAGE_REGION, points=entry['championPoints'])
             champs.append(champ)
         return champs
-    
-
 

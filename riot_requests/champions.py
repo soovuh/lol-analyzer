@@ -11,4 +11,11 @@ class Champion:
         self.id = id
         self.region = region
         self.cass_champ = cass.Champion(id=id, region=region)
-        print(self.cass_champ.name)
+        self.name = self.cass_champ.name
+
+
+class UserChampion(Champion):
+    def __init__(self, id, region, points):
+        super().__init__(id, region)
+        self.points = points
+
