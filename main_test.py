@@ -1,7 +1,12 @@
-from riot_requests.players import Player
+from riot_requests.players import Player, get_user_puuid, get_user_account_id
 
-player = Player('sooova', region='RU')
+nickname = 'sooovuh'
+tagline = 'kayn'
+region = 'RU'
+
+puuid = get_user_puuid(nickname, tagline)
+account_id = get_user_account_id(puuid, region)
+player = Player(account_id, puuid, region, nickname)
 champs = player.get_top_5_mastery_champs()
-print(f'Player {player.name} with level {player.cass_summoner.level} is playing on region {player.region}.\nThe highest amount of skill:')
 for champ in champs:
-    print(f'{champ.name} - {champ.points} points.')
+    print(champ.name)
