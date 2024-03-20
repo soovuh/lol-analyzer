@@ -12,9 +12,10 @@ class Champion:
         self.region = region
         self.cass_champ = cass.Champion(id=id, region=region)
         self.name = self.cass_champ.name
+        self.icon_url = self.cass_champ.image().url
 
 
-class UserChampion(Champion):
+class SummonerChampion(Champion):
     def __init__(self, id, region, points):
         super().__init__(id, region)
         self.points = points

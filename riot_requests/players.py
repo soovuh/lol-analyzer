@@ -1,10 +1,9 @@
 import os
-import json
 import requests
 from requests.exceptions import HTTPError
 import cassiopeia as cass
 from dotenv import load_dotenv
-from riot_requests.champions import UserChampion
+from riot_requests.champions import SummonerChampion
 
 load_dotenv()
 API_KEY = os.environ.get('RIOT_API_KEY')
@@ -53,17 +52,34 @@ class Player:
         # Get needed fields from Summoner class in cass
         self.level = self.summoner.level
         self.profile_icon_url = self.summoner.profile_icon().url
-        print(self.profile_icon_url)
-        
+
+ 
     def get_top_5_mastery_champs(self):
-        url = f'https://{self.region.lower()}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{self.puuid}?api_key={API_KEY}'
-        response = requests.get(url)
+        url = f'https://{self.region.lower()}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{self.puuid}'
+        headers = {'X-Riot-Token': API_KEY}
+        response = requests.get(url=url, headers=headers)
 
         data = response.json()
         data = data[0:5]
         champs = []
         for entry in data:
-            champ = UserChampion(id=entry["championId"], region=DEFAULT_LANGUAGE_REGION, points=entry['championPoints'])
+            print(entry)
+            champ = SummonerChampion(id=entry["championId"], region=DEFAULT_LANGUAGE_REGION, points=entry['championPoints'])
             champs.append(champ)
         return champs
+    
+    def get_ranks(self):
+        result = {
+            "RANKED_SOLO_5x5": None,
+            "RANKED_FLEX_SR": None,
+        }
+        ranks = self.summoner.ranks
+        for key, value in ranks.items():
+            queue = key.value
+            if queue in result.keys():
+                rank = value.tuple[0].value
+                division = value.tuple[1].value
+                result[queue] = (rank, division)
+
+        return result
 
